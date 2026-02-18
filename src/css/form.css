@@ -183,3 +183,17 @@ main {
     background-color: #3b5bdb;
     transform: scale(1.1);
 }
+
+
+.list-item:hover {
+    animation: shadow-drop-center .4s cubic-bezier(.25, .46, .45, .94) both
+}
+@keyframes shadow-drop-center {
+    0% {
+        box-shadow: 0 0 0 0 transparent
+    }
+
+    100% {
+        box-shadow: 0 0 20px 0 #3b5bdb
+    }
+}

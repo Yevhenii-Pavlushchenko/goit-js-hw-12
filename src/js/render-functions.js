@@ -20,7 +20,7 @@ export function createGallery(images) {
         downloads,
       }) => {
         return `
-            <li class="list-item">
+            <li class="list-item shadow-drop-center">
                 <a href="${largeImageURL}"><img src="${webformatURL}" alt="${tags}" /></a>
                 <div class="list-content">
                     <div>
