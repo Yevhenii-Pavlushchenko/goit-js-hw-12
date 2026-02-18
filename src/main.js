@@ -14,9 +14,11 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector('.form');
 const outputTotal = document.querySelector('.output-total');
+const scrollTopBtn = document.querySelector('#scrollToTop');
 
 form.addEventListener('submit', onSubmitForm);
 loadBtn.addEventListener('click', onLoadMoreClick);
+
 let inputValue = '';
 let pageNum = 1;
 let totalPages = 0;
@@ -85,6 +87,7 @@ async function onSubmitForm(event) {
 
 async function onLoadMoreClick() {
   showLoader();
+  hideLoadMoreButton();
   try {
     pageNum += 1;
     const { hits, totalHits } = await getImagesByQuery(inputValue, pageNum);
@@ -108,19 +111,29 @@ async function onLoadMoreClick() {
 
     createGallery(hits);
     scrollDownOnePage();
-    hideLoader();
   } catch (error) {
     console.log(error);
+    iziToast.error({
+      message: error.message,
+      backgroundColor: `#4e75ff`,
+      messageColor: `#ffffff`,
+      position: `topRight`,
+    });
+  } finally {
+    hideLoader();
   }
 }
+
 function scrollDownOnePage() {
-  window.scrollBy({
-    top: 1200,
+  const gallery = document.querySelector('.gallery');
+  if (!gallery.firstElementChild) return;
+  const { height } = gallery.firstElementChild.getBoundingClientRect();
+
+  scrollBy({
+    top: height * 2,
     behavior: 'smooth',
   });
 }
-
-const scrollTopBtn = document.querySelector('#scrollToTop');
 
 // Скрол вгору при натисканні
 scrollTopBtn.addEventListener('click', () => {
