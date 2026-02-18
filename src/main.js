@@ -127,3 +127,21 @@ function scrollDownOnePage() {
     behavior: 'smooth',
   });
 }
+
+const scrollTopBtn = document.querySelector('#scrollToTop');
+
+// Скрол вгору при натисканні
+scrollTopBtn.addEventListener('click', () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  });
+});
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 500) {
+    scrollTopBtn.classList.add('is-visible');
+  } else {
+    scrollTopBtn.classList.remove('is-visible');
+  }
+});
