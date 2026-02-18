@@ -12,17 +12,20 @@ import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector('.form');
+const jsImgTotal = document.querySelector('.img-total');
 
 form.addEventListener('submit', onSubmitForm);
 loadBtn.addEventListener('click', onLoadMoreClick);
 let resInput = '';
 let pageNum = 1;
 let totalPages = 0;
+let imagesCount = 0;
 
 hideLoader();
 
 async function onSubmitForm(event) {
   event.preventDefault();
+  imagesCount = 0;
   pageNum = 1;
   hideLoadMoreButton();
   clearGallery();
@@ -30,28 +33,36 @@ async function onSubmitForm(event) {
   resInput = form.elements['search-text'].value.trim();
   try {
     if (resInput === '') {
-      iziToast.show({
+      iziToast.warning({
+        title: 'warning',
+        position: 'topRight',
         message: 'Please enter a search query!',
-        backgroundColor: `#EF4040`,
-        messageColor: `#ffffff`,
-        position: `topRight`,
-        maxWidth: `432px`,
       });
+
+      jsImgTotal.textContent = ``;
+
       hideLoadMoreButton();
       hideLoader();
       clearGallery();
       return;
     }
+
     showLoader();
     const { hits, totalHits } = await request(resInput, pageNum);
     totalPages = Math.ceil(totalHits / perPage);
+
+    imagesCount += hits.length;
+    if (imagesCount > totalHits) {
+      imagesCount = totalHits;
+    }
+    jsImgTotal.textContent = `Total images: ${imagesCount}/${totalHits}`;
 
     if (!hits || hits.length === 0) {
       console.log(hits);
       iziToast.show({
         message:
           ' Sorry, there are no images matching your search query. Please try again!',
-        backgroundColor: `#EF4040`,
+        backgroundColor: `#4e75ff`,
         messageColor: `#ffffff`,
         position: `topRight`,
         maxWidth: `432px`,
@@ -66,13 +77,13 @@ async function onSubmitForm(event) {
   } catch (error) {
     hideLoadMoreButton();
     console.log(error.message);
-    iziToast.show({
-      message: 'Please enter a search query!',
-      backgroundColor: `#EF4040`,
-      messageColor: `#ffffff`,
-      position: `topRight`,
-      maxWidth: `432px`,
-    });
+    // iziToast.show({
+    //   message: 'Please enter a search query!',
+    //   backgroundColor: `#4e75ff`,
+    //   messageColor: `#ffffff`,
+    //   position: `topRight`,
+    //   maxWidth: `432px`,
+    // });
   } finally {
     form.elements['search-text'].value = '';
     hideLoader();
@@ -83,13 +94,19 @@ async function onLoadMoreClick() {
   showLoader();
   try {
     pageNum += 1;
-    const { hits } = await request(resInput, pageNum);
+    const { hits, totalHits } = await request(resInput, pageNum);
+
+    imagesCount += hits.length;
+    if (imagesCount > totalHits) {
+      imagesCount = totalHits;
+    }
+    jsImgTotal.textContent = `Total images: ${imagesCount}/${totalHits}`;
     if (pageNum < totalPages) {
       showLoadMoreButton();
-    } else if (pageNum === totalPages) {
+    } else {
       iziToast.show({
-        message: 'Sorry!',
-        backgroundColor: `#EF4040`,
+        message: "We're sorry, but you've reached the end of search results.",
+        backgroundColor: `#4e75ff`,
         messageColor: `#ffffff`,
         position: `topRight`,
         maxWidth: `432px`,
@@ -98,15 +115,15 @@ async function onLoadMoreClick() {
     }
 
     createGallery(hits);
-    getBoundingClientRect();
+    scrollDownOnePage();
     hideLoader();
   } catch (error) {
     console.log(error);
   }
 }
-function getBoundingClientRect() {
+function scrollDownOnePage() {
   window.scrollBy({
-    top: 1080,
+    top: 1200,
     behavior: 'smooth',
   });
 }
